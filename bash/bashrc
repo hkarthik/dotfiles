@@ -1,4 +1,5 @@
 . ~/Projects/dotfiles/bash/env
 . ~/Projects/dotfiles/bash/config
 . ~/Projects/dotfiles/bash/aliases
-
+export PATH=/usr/local/bin:/usr/local/sbin:$PATH
+[ -f ~/.bundler-exec.sh ] && source ~/.bundler-exec.sh
