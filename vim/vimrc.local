@@ -1,1 +1,2 @@
 color vividchalk
+let CommandTMaxFiles = 20000

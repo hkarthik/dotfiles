@@ -5,4 +5,5 @@ ln -nfs ~/Projects/dotfiles/vim/vimrc.local ~/.vimrc.local
 ln -nfs ~/Projects/dotfiles/vim/gvimrc.local ~/.gvimrc.local
 ln -nfs ~/Projects/dotfiles/vim/janus.rake ~/.janus.rake
 ln -nfs ~/Projects/dotfiles/tmux/tmux.conf ~/.tmux.conf
+ln -nfs ~/Projects/dotfiles/.irbrc ~/.irbrc
 echo "finished setting up; have fun!"

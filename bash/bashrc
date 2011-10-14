@@ -3,4 +3,4 @@
 . ~/Projects/dotfiles/bash/aliases
 export PATH=/usr/local/bin:/usr/local/sbin:$PATH
 export CC=gcc-4.2
-[ -f ~/.bundler-exec.sh ] && source ~/.bundler-exec.sh
+#[ -f ~/.bundler-exec.sh ] && source ~/.bundler-exec.sh

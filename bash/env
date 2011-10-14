@@ -1,5 +1,5 @@
 export EDITOR='$HOME/bin/vim'
-
+export NODE_PATH='usr/local/lib/node_modules'
 export PATH=$PATH:~/bin:
 
 # to make a nice shell prompt source .rvm/contrib
