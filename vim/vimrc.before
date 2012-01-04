@@ -1,0 +1,3 @@
+ " Mapping leader 
+ let mapleader = "," 
+ let g:mapleader = "," 

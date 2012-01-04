@@ -27,11 +27,15 @@ ZSH_THEME="bira"
 plugins=(git heroku)
 export PATH=/usr/local/sbin:$PATH
 export PATH=/usr/local/bin:$PATH
+export EDITOR='mvim -v'
 
 source $ZSH/oh-my-zsh.sh
 
 # Customize to your needs...
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # Load RVM function
+
+# Tmuxinator
+[[ -s $HOME/.tmuxinator/scripts/tmuxinator ]] && source $HOME/.tmuxinator/scripts/tmuxinator
 
 # Needed for nginx/unicorn
 function bbu() {
@@ -101,3 +105,19 @@ function git_time_since_commit() {
         fi
     fi
 }
+
+function define_vim_wrappers()
+{
+  vim_commands=(
+    eview evim gview gvim gvimdiff gvimtutor rgview
+    rgvim rview rvim vim vimdiff vimtutor xxd mvim
+  )
+
+  for cmd in ${vim_commands[@]}; do
+    cmd_path=`/usr/bin/env which -a "${cmd}" 2>/dev/null | grep '^/'`
+    if [ -x "${cmd_path}" ]; then
+      eval "function ${cmd} () { (unset GEM_HOME; unset GEM_PATH; $cmd_path \$@) }"
+    fi
+  done
+}
+define_vim_wrappers
