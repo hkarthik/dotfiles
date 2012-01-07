@@ -1,3 +1,5 @@
+set shell=/bin/sh
  " Mapping leader 
  let mapleader = "," 
  let g:mapleader = "," 
+ call janus#disable_plugin('hammer')
