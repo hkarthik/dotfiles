@@ -24,7 +24,7 @@ DISABLE_AUTO_UPDATE="true"
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git heroku)
+plugins=(git heroku vi-mode git-flow)
 export PATH=/usr/local/sbin:$PATH
 export PATH=/usr/local/bin:$PATH
 export EDITOR='mvim -v'
@@ -50,9 +50,10 @@ alias rake="noglob rake"
 
 local git_time_since_last_commit='$(git_time_since_commit)%{$reset_color%}'
 
-export PROMPT="╭─${user_host} ${current_dir} ${rvm_ruby} ${git_time_since_last_commit} ${git_branch}
+export PROMPT="╭─${user_host} ${current_dir} ${rvm_ruby} ${git_time_since_last_commit} ${git_branch} $(vi_mode_prompt_info)
 ╰─%B$%b "
-RPS1="${return_code}"
+
+RPS1="${return_code} $(vi_mode_prompt_info)"
 
 # Colors vary depending on time lapsed.
 ZSH_THEME_GIT_TIME_SINCE_COMMIT_SHORT="%{$fg[green]%}"

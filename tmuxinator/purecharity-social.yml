@@ -1,0 +1,17 @@
+# ~/.tmuxinator/purecharity-social.yml
+# you can make as many tabs as you wish...
+
+project_name: Pure Charity
+project_root: ~/Projects/purecharity-social
+socket_path: /tmp/tmux-charity # Not needed.  Remove to use default socket
+tabs:
+  - editor:
+    - mvim -v
+  - shell:
+    -
+  - console:
+    - rails c
+  - server: 
+    - foreman start
+  - logs: 
+    - tail -f log/development.log

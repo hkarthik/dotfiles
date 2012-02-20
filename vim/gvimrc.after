@@ -2,6 +2,7 @@ set background=dark
 set shell=/bin/sh
 set guioptions=aAce
 set transparency=15
+set clipboard=unnamed
 color solarized
 let CommandTMaxFiles = 20000
 set nolist
