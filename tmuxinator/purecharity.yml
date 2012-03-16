@@ -1,9 +1,9 @@
-# ~/.tmuxinator/purecharity-social.yml
+# ~/.tmuxinator/purecharity.yml
 # you can make as many tabs as you wish...
 pre: unset TMPDIR
 project_name: Pure Charity
-project_root: ~/Projects/purecharity-social
-socket_path: /tmp/tmux-charity # Not needed.  Remove to use default socket
+project_root: ~/Projects/purecharity
+socket_path: /tmp/tmux-pure # Not needed.  Remove to use default socket
 tabs:
   - editor:
     - mvim -v
