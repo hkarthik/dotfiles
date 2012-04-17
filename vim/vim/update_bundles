@@ -11,6 +11,7 @@ git_bundles = %w{
   git://github.com/kchmck/vim-coffee-script.git
   git://github.com/pangloss/vim-javascript.git
   git://github.com/mattn/gist-vim.git
+  git://github.com/mattn/webapi-vim
   git://github.com/sickill/vim-pasta.git
   git://github.com/ecomba/vim-ruby-refactoring.git
   git://github.com/altercation/vim-colors-solarized.git
@@ -19,6 +20,9 @@ git_bundles = %w{
   git://github.com/ervandew/supertab.git
   git://github.com/Lokaltog/vim-powerline.git
   git://github.com/scrooloose/syntastic.git
+  git://github.com/vim-scripts/ack.vim.git
+  git://github.com/kana/vim-smartinput.git
+  git://github.com/nono/vim-handlebars.git
 }
 
 require 'fileutils'
