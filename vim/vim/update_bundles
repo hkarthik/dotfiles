@@ -23,6 +23,7 @@ git_bundles = %w{
   git://github.com/vim-scripts/ack.vim.git
   git://github.com/kana/vim-smartinput.git
   git://github.com/nono/vim-handlebars.git
+  git://github.com/majutsushi/tagbar.git
 }
 
 require 'fileutils'

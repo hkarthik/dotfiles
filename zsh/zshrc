@@ -45,6 +45,10 @@ source $ZSH/oh-my-zsh.sh
 # Tmuxinator
 [[ -s $HOME/.tmuxinator/scripts/tmuxinator ]] && source $HOME/.tmuxinator/scripts/tmuxinator
 
+# Aliases
+alias byword='open -a /Applications/Byword.app/Contents/MacOS/Byword'
+
+
 # Needed for nginx/unicorn
 function bbu() {
   if [[ -z $1 ]] ; then
