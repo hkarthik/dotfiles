@@ -1,4 +1,5 @@
 map <Leader>n :NERDTreeToggle<CR>
+map <Leader>f :NERDTreeFind
 let NERDTreeIgnore=['\.pyc$', '\.pyo$', '\.rbc$', '\.rbo$', '\.class$', '\.o$', '\~$']
 let NERDTreeQuitOnOpen = 0
 let g:NERDTreeWinSize = 40
