@@ -143,9 +143,16 @@ alias desk_run_tests_50='REPORTER=spec,slowtest,faillist SLOW_TEST_NUMBER=50 rak
 alias desk_run_email_tests='REPORTER=spec,slowtest,faillist rake assistly:test:email_units'
 alias desk_run_billing_test='REPORTER=spec,slowtest,faillist rake assistly:test:billing_units'
 alias desk_run_international_test='REPORTER=spec,slowtest,faillist rake assistly:test:international_units'
-alias desktest='rake ci:setup:db; REPORTER=progress,failtest bundle exec time rake assistly:test:all'
+
+desktest()
+{
+ export REPORTER=progress,failtest,slowtest;
+ rake ci:setup:db;
+ RAILS_ENV=test bundle exec time rake assistly:test:all
+}
 
 deskonetest ()
 {
-  REPORTER=spec,failtest bundle exec time rake assistly:test:${2:-units} TEST=${1} ${3}
+   export REPORTER=spec,failtest;
+   RAILS_ENV=test bundle exec time rake assistly:test:${2:-units} TEST=${1} ${3}
 }
