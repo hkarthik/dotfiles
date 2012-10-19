@@ -1,3 +1,4 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =1
+let g:netrw_dirhist_cnt =2
 let g:netrw_dirhist_1='/Users/khariharan/.rvm/gems/ruby-1.9.3-p194@desk-rails3/gems/redis-2.2.2'
+let g:netrw_dirhist_2='/Users/khariharan/.rvm/gems/ruby-1.9.3-p194@strong_params/gems/railties-3.1.0'
