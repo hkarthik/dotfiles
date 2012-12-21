@@ -134,24 +134,20 @@ alias desk_run_international_test='REPORTER=spec,slowtest,faillist rake assistly
 
 function desktest() {
   export REPORTER=progress,failtest,slowtest;
-  RAILS_ENV=test rake ci:setup:db;
-  RAILS_ENV=test bundle exec time rake assistly:test:all
+  RAILS_ENV=test bundle exec time rake ci:setup:db assistly:test:all
 }
 
 function desktest_verbose() {
   export REPORTER=spec,failtest;
-  RAILS_ENV=test rake ci:setup:db;
-  RAILS_ENV=test bundle exec time rake assistly:test:all
+  RAILS_ENV=test bundle exec time rake ci:setup:db assistly:test:all
 }
 
 function deskonetest() {
   export REPORTER=spec,failtest;
-  RAILS_ENV=test rake ci:setup:db;
-  RAILS_ENV=test bundle exec time rake assistly:test:${2:-units} TEST=${1} ${3}
+  RAILS_ENV=test bundle exec time rake ci:setup:db assistly:test:${2:-units} TEST=${1} ${3}
 }
 
 function desktests() {
   export REPORTER=spec,failtest;
-  RAILS_ENV=test rake ci:setup:db;
-  RAILS_ENV=test bundle exec time rake assistly:test:multiple TESTS=${1}
+  RAILS_ENV=test bundle exec time rake ci:setup:db assistly:test:multiple TESTS=${1}
 }
