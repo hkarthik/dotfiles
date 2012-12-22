@@ -5,4 +5,5 @@ ln -nfs ~/Projects/dotfiles/vim/vim ~/.vim
 ln -nfs ~/Projects/dotfiles/tmux/tmux.conf ~/.tmux.conf
 ln -nfs ~/Projects/dotfiles/.irbrc ~/.irbrc
 ln -nfs ~/Projects/dotfiles/ack/ackrc ~/.ackrc
+ln -nfs ~/Projects/dotfiles/git/.gitconfig ~/.gitconfig
 echo "finished setting up; have fun!"
