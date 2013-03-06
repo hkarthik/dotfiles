@@ -8,6 +8,9 @@
 --ignore-dir=tmp
 --ignore-dir=doc
 --ignore-dir=coverage
+--ignore-dir=.bundle
+--ignore-dir=.git
+--ignore-dir=.sass-cache
 --sort-files
 --color
 --follow
