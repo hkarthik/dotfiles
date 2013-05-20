@@ -1,10 +1,3 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =8
-let g:netrw_dirhist_1='/Users/khariharan/.rvm/gems/ruby-1.9.3-p194@desk-rails3/gems/redis-2.2.2'
-let g:netrw_dirhist_2='/Users/khariharan/.rvm/gems/ruby-1.9.3-p194@strong_params/gems/railties-3.1.0'
-let g:netrw_dirhist_3='/Users/khariharan/.rvm/gems/ruby-1.9.3-p194@desk-rails31/gems/rails-3.1.6'
-let g:netrw_dirhist_4='/Users/khariharan/.rvm/gems/ruby-1.9.3-p194@desk-rails3/gems/encryptor-1.1.3'
-let g:netrw_dirhist_5='/Users/khariharan/.rvm/gems/ruby-1.9.3-p194@desk-rails3/bundler/gems/minitest-reporters-e0b2f73b69f3'
-let g:netrw_dirhist_6='/Users/khariharan/.rvm/gems/ruby-1.9.3-p194@desk-rails3/gems/minitest-3.3.0'
-let g:netrw_dirhist_7='/Users/khariharan/.rvm/gems/ruby-1.9.3-p194@desk-rails3/gems/webmock-1.8.11'
-let g:netrw_dirhist_8='/Users/khariharan/.rvm/gems/ruby-1.9.3-p194@desk-rails3/gems/bunny-0.9.0.pre6'
+let g:netrw_dirhist_cnt =1
+let g:netrw_dirhist_1='/Users/khariharan/.rvm/gems/ruby-1.9.3-p392@desk/gems/guard-minitest-1.0.0.beta1'

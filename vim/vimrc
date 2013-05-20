@@ -90,3 +90,8 @@ set wildmode=list:longest
 set wildmenu                    " Enable ctrl-n and ctrl-p to scroll thru matches
 set wildignore=*.o,*.obj,*~     " Stuff to ignore when tab completing
 set wildignore+=*vim/backups*
+
+" Plugin Configuration
+" =================================
+let g:ackprg = 'ag --nogroup --nocolor --column' " Use Ag with Ack.vim instead of ack
+
