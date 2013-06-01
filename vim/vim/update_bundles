@@ -21,7 +21,6 @@ git_bundles = %w{
   git://github.com/Lokaltog/vim-powerline.git
   git://github.com/scrooloose/syntastic.git
   git://github.com/vim-scripts/ack.vim.git
-  git://github.com/kana/vim-smartinput.git
   git://github.com/nono/vim-handlebars.git
   git://github.com/majutsushi/tagbar.git
   git://github.com/jc00ke/vim-tomdoc.git
