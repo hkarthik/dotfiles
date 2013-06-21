@@ -100,8 +100,7 @@ endif
 function! s:BufWinEnterHook()
     if empty(&bt)
         let loclist = g:SyntasticLoclist.current()
-        call g:SyntasticAutoloclistNotifier.AutoToggle(loclist)
-        call g:SyntasticHighlightingNotifier.refresh(loclist)
+        call s:notifiers.refresh(loclist)
     endif
 endfunction
 
@@ -135,7 +134,6 @@ function! s:UpdateErrors(auto_invoked, ...)
     end
 
     let loclist = g:SyntasticLoclist.current()
-    call s:notifiers.refresh(loclist)
 
     if g:syntastic_always_populate_loc_list || g:syntastic_auto_jump
         call setloclist(0, loclist.filteredRaw())
@@ -143,6 +141,8 @@ function! s:UpdateErrors(auto_invoked, ...)
             silent! lrewind
         endif
     endif
+
+    call s:notifiers.refresh(loclist)
 endfunction
 
 "clear the loc list for the buffer
@@ -161,29 +161,38 @@ function! s:CacheErrors(...)
     let newLoclist = g:SyntasticLoclist.New([])
 
     if !s:SkipFile()
+        let active_checkers = 0
         for ft in s:CurrentFiletypes()
             if a:0
                 let checker = s:registry.getChecker(ft, a:1)
-                if !empty(checker)
-                    let checkers = [checker]
-                endif
+                let checkers = !empty(checker) ? [checker] : []
             else
                 let checkers = s:registry.getActiveCheckers(ft)
             endif
 
             for checker in checkers
+                let active_checkers += 1
                 call syntastic#util#debug("CacheErrors: Invoking checker: " . checker.getName())
 
                 let loclist = checker.getLocList()
 
                 if !loclist.isEmpty()
                     let newLoclist = newLoclist.extend(loclist)
+                    call newLoclist.setName( checker.getName() . ' ('. checker.getFiletype() . ')' )
 
                     "only get errors from one checker at a time
                     break
                 endif
             endfor
         endfor
+
+        if !active_checkers
+            if a:0
+                call syntastic#util#warn('checker ' . a:1 . ' is not active for filetype ' . &filetype)
+            else
+                call syntastic#util#debug('no active checkers for filetype ' . &filetype)
+            endif
+        endif
     endif
 
     let b:syntastic_loclist = newLoclist
@@ -313,6 +322,7 @@ endfunction
 "   'defaults' - a dict containing default values for the returned errors
 "   'subtype' - all errors will be assigned the given subtype
 "   'postprocess' - a list of functions to be applied to the error list
+"   'cwd' - change directory to the given path before running the checker
 function! SyntasticMake(options)
     call syntastic#util#debug('SyntasticMake: called with options: '. string(a:options))
 
@@ -321,6 +331,8 @@ function! SyntasticMake(options)
     let old_shellpipe = &shellpipe
     let old_shell = &shell
     let old_errorformat = &l:errorformat
+    let old_cwd = getcwd()
+    let old_lc_all = $LC_ALL
 
     if s:OSSupportsShellpipeHack()
         "this is a hack to stop the screen needing to be ':redraw'n when
@@ -337,8 +349,19 @@ function! SyntasticMake(options)
         let &l:errorformat = a:options['errorformat']
     endif
 
+    if has_key(a:options, 'cwd')
+        exec 'lcd ' . fnameescape(a:options['cwd'])
+    endif
+
+    let $LC_ALL = 'C'
     silent lmake!
+    let $LC_ALL = old_lc_all
+
     let errors = getloclist(0)
+
+    if has_key(a:options, 'cwd')
+        exec 'lcd ' . fnameescape(old_cwd)
+    endif
 
     call setloclist(0, old_loclist)
     let &l:makeprg = old_makeprg

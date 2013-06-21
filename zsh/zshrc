@@ -42,6 +42,11 @@ DISABLE_AUTO_TITLE=true
 # Aliases
 alias byword='open -a /Applications/Byword.app/Contents/MacOS/Byword'
 
+# Functions
+for function in ~/.zsh/functions/*; do
+  source $function
+done
+
 
 # Needed for nginx/unicorn
 function bbu() {

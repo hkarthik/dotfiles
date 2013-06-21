@@ -1,3 +1,6 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =1
+let g:netrw_dirhist_cnt =4
 let g:netrw_dirhist_1='/Users/khariharan/.rvm/gems/ruby-1.9.3-p392@desk/gems/guard-minitest-1.0.0.beta1'
+let g:netrw_dirhist_2='/Users/khariharan/.rvm/gems/ruby-1.9.3-p392@desk/gems/oauth-plugin-0.4.0.pre4'
+let g:netrw_dirhist_3='/Users/khariharan/.rvm/gems/ruby-1.9.3-p392@desk/bundler/gems/jbuilder-83a2cbcc7a50'
+let g:netrw_dirhist_4='/Users/khariharan/.rvm/gems/ruby-1.9.3-p392@desk/gems/zeus-0.13.2'

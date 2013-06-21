@@ -17,6 +17,7 @@ let s:defaultCheckers = {
         \ 'objcpp':     ['gcc'],
         \ 'perl':       ['perl', 'perlcritic'],
         \ 'php':        ['php', 'phpcs', 'phpmd'],
+        \ 'puppet':     ['puppet', 'puppetlint'],
         \ 'python':     ['python', 'flake8', 'pylint'],
         \ 'ruby':       ['mri'],
         \ 'sh':         ['sh'],
@@ -64,7 +65,7 @@ endfunction
 
 function! g:SyntasticRegistry.getActiveCheckers(ftalias)
     let filetype = s:SyntasticRegistryNormaliseFiletype(a:ftalias)
-    let checkers = self.availableCheckersFor(filetype)
+    let checkers = self.availableCheckersFor(a:ftalias)
 
     if self._userHasFiletypeSettings(filetype)
         return self._filterCheckersByUserSettings(checkers, filetype)
@@ -126,8 +127,7 @@ endfunction
 
 function! g:SyntasticRegistry._filterCheckersByDefaultSettings(checkers, filetype)
     if has_key(s:defaultCheckers, a:filetype)
-        let whitelist = s:defaultCheckers[a:filetype]
-        return filter(a:checkers, "index(whitelist, v:val.getName()) != -1")
+        return self._filterCheckersByName(a:checkers, s:defaultCheckers[a:filetype])
     endif
 
     return a:checkers
@@ -139,11 +139,27 @@ function! g:SyntasticRegistry._filterCheckersByUserSettings(checkers, filetype)
     else
         let whitelist = g:syntastic_{a:filetype}_checkers
     endif
-    return filter(a:checkers, "index(whitelist, v:val.getName()) != -1")
+    return self._filterCheckersByName(a:checkers, whitelist)
+endfunction
+
+function! g:SyntasticRegistry._filterCheckersByName(checkers, list)
+    let checkers_by_name = {}
+    for c in a:checkers
+        let checkers_by_name[c.getName()] = c
+    endfor
+
+    let filtered = []
+    for name in a:list
+        if has_key(checkers_by_name, name)
+            call add(filtered, checkers_by_name[name])
+        endif
+    endfor
+
+    return filtered
 endfunction
 
 function! g:SyntasticRegistry._filterCheckersByAvailability(checkers)
-    return filter(a:checkers, "v:val.isAvailable()")
+    return filter(copy(a:checkers), "v:val.isAvailable()")
 endfunction
 
 function! g:SyntasticRegistry._loadCheckers(filetype)
