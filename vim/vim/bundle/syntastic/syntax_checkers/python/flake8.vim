@@ -15,19 +15,7 @@ function! SyntaxCheckers_python_flake8_IsAvailable()
 endfunction
 
 function! SyntaxCheckers_python_flake8_GetHighlightRegex(i)
-    if match(a:i['text'], 'is assigned to but never used') > -1
-                \ || match(a:i['text'], 'imported but unused') > -1
-                \ || match(a:i['text'], 'undefined name') > -1
-                \ || match(a:i['text'], 'redefinition of') > -1
-                \ || match(a:i['text'], 'referenced before assignment') > -1
-                \ || match(a:i['text'], 'duplicate argument') > -1
-                \ || match(a:i['text'], 'after other statements') > -1
-                \ || match(a:i['text'], 'shadowed by loop variable') > -1
-
-        let term = split(a:i['text'], "'", 1)[1]
-        return '\V\<'.term.'\>'
-    endif
-    return ''
+    return SyntaxCheckers_python_pyflakes_GetHighlightRegex(a:i)
 endfunction
 
 function! SyntaxCheckers_python_flake8_GetLocList()
@@ -37,11 +25,11 @@ function! SyntaxCheckers_python_flake8_GetLocList()
         \ 'subchecker': 'flake8' })
 
     let errorformat =
-        \ '%E%f:%l: could not compile,%-Z%p^,'.
-        \ '%W%f:%l:%c: F%n %m,'.
-        \ '%W%f:%l:%c: C%n %m,'.
-        \ '%E%f:%l:%c: %t%n %m,'.
-        \ '%E%f:%l: %t%n %m,'.
+        \ '%E%f:%l: could not compile,%-Z%p^,' .
+        \ '%E%f:%l:%c: F%n %m,' .
+        \ '%W%f:%l:%c: C%n %m,' .
+        \ '%W%f:%l:%c: %.%n %m,' .
+        \ '%W%f:%l: %.%n %m,' .
         \ '%-G%.%#'
 
     return SyntasticMake({
@@ -52,3 +40,5 @@ endfunction
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'python',
     \ 'name': 'flake8'})
+
+runtime! syntax_checkers/python/pyflakes.vim

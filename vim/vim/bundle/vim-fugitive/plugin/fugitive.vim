@@ -243,7 +243,7 @@ function! s:repo_bare() dict abort
     return 0
   else
     return self.configured_tree() ==# ''
-  endtry
+  endif
 endfunction
 
 function! s:repo_translate(spec) dict abort
@@ -1504,7 +1504,7 @@ function! s:Move(force,destination)
   if a:destination =~# '^/'
     let destination = a:destination[1:-1]
   else
-    let destination = fnamemodify(s:sub(a:destination,'[%#]%(:\w)*','\=expand(submatch(0))'),':p')
+    let destination = s:shellslash(fnamemodify(s:sub(a:destination,'[%#]%(:\w)*','\=expand(submatch(0))'),':p'))
     if destination[0:strlen(s:repo().tree())] ==# s:repo().tree('')
       let destination = destination[strlen(s:repo().tree('')):-1]
     endif
@@ -2152,7 +2152,7 @@ function! s:BufWriteIndexFile()
     endif
     let info = old_mode.' '.sha1.' '.stage."\t".path
     call writefile([info],tmp)
-    if has('win32')
+    if &shell =~# 'cmd'
       let error = system('type '.s:gsub(tmp,'/','\\').'|'.s:repo().git_command('update-index','--index-info'))
     else
       let error = system(s:repo().git_command('update-index','--index-info').' < '.tmp)

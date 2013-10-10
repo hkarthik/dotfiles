@@ -1,7 +1,7 @@
 "=============================================================================
 " File: gist.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 11-Jun-2013.
+" Last Change: 07-Oct-2013.
 " Version: 7.1
 " WebPage: http://github.com/mattn/gist-vim
 " License: BSD
@@ -19,7 +19,7 @@ if !executable('curl')
   finish
 endif
 
-let s:configfile = expand('~/.gist-vim')
+let s:gist_token_file = expand(get(g:, 'gist_token_file', '~/.gist-vim'))
 let s:system = function(get(g:, 'webapi#system_function', 'system'))
 
 if !exists('g:github_user')
@@ -100,7 +100,12 @@ function! s:format_gist(gist)
   else
     let code = ""
   endif
-  return printf("gist: %s %s %s%s", a:gist.id, name, type(a:gist.description)==0 || a:gist.description==""?"":'('.a:gist.description.')', code)
+  let desc = type(a:gist.description)==0 || a:gist.description == "" ? "" : '('.a:gist.description.')'
+  let name = substitute(name, '[\r\n\t]', ' ', 'g')
+  let name = substitute(name, '  ', ' ', 'g')
+  let desc = substitute(desc, '[\r\n\t]', ' ', 'g')
+  let desc = substitute(desc, '  ', ' ', 'g')
+  return printf("gist: %s %s %s%s", a:gist.id, name, desc, code)
 endfunction
 
 " Note: A colon in the file name has side effects on Windows due to NTFS Alternate Data Streams; avoid it.
@@ -122,7 +127,13 @@ function! s:GistList(gistls, page)
     endif
     setlocal modifiable
   else
-    exec 'silent noautocmd split' s:bufprefix.a:gistls
+    if get(g:, 'gist_list_vsplit', 0)
+      exec 'silent noautocmd vsplit +set\ winfixwidth ' s:bufprefix.a:gistls
+    elseif get(g:, 'gist_list_rightbelow', 0)
+      exec 'silent noautocmd rightbelow 5 split +set\ winfixheight ' s:bufprefix.a:gistls
+    else
+      exec 'silent noautocmd split' s:bufprefix.a:gistls
+    endif
   endif
   if a:page > 1
     let oldlines = getline(0, line('$'))
@@ -155,7 +166,7 @@ function! s:GistList(gistls, page)
     redraw
     echohl ErrorMsg | echomsg content.message | echohl None
     if content.message == 'Bad credentials'
-      call delete(s:configfile)
+      call delete(s:gist_token_file)
     endif
     return
   endif
@@ -171,6 +182,7 @@ function! s:GistList(gistls, page)
   setlocal nomodified
   setlocal nomodifiable
   syntax match SpecialKey /^gist:/he=e-1
+  syntax match Title /^gist: \S\+/hs=s+5 contains=ALL
   nnoremap <silent> <buffer> <cr> :call <SID>GistListAction(0)<cr>
   nnoremap <silent> <buffer> <s-cr> :call <SID>GistListAction(1)<cr>
 
@@ -247,7 +259,13 @@ function! s:GistGet(gistid, clipboard)
   redraw | echon 'Getting gist... '
   let res = webapi#http#get(g:github_api_url.'/gists/'.a:gistid, '', { "Authorization": s:GistGetAuthHeader() })
   if res.status =~ '^2'
-    let gist = webapi#json#decode(res.content)
+    try
+      let gist = webapi#json#decode(res.content)
+    catch
+      redraw
+      echohl ErrorMsg | echomsg 'Gist seems to be broken' | echohl None
+      return
+    endtry
     if get(g:, 'gist_get_multiplefile', 0) != 0
       let num_file = len(keys(gist.files))
     else
@@ -270,7 +288,12 @@ function! s:GistGet(gistid, clipboard)
           endif
           setlocal modifiable
         else
-          exec 'silent noautocmd new'
+          silent only!
+          if get(g:, 'gist_list_vsplit', 0)
+            exec 'silent noautocmd rightbelow vnew'
+          else
+            exec 'silent noautocmd rightbelow new'
+          endif
           setlocal noswapfile
           exec 'noautocmd file' s:bufprefix.a:gistid."/".fnameescape(filename)
         endif
@@ -428,15 +451,18 @@ function! s:get_current_filename(no)
   return filename
 endfunction
 
-function s:update_GistID(id)
+function! s:update_GistID(id)
   let view = winsaveview()
   normal! gg
+  let ret = 0
   if search('\<GistID\>:\s*$')
     let line = getline('.')
     let line = substitute(line, '\s\+$', '', 'g')
     call setline('.', line . ' ' . a:id)
+    let ret = 1
   endif
   call winrestview(view)
+  return ret
 endfunction
 
 " GistPost function:
@@ -484,7 +510,9 @@ function! s:GistPost(content, private, desc, anonymous)
     \ "description": gist['description'],
     \ "private": a:private,
     \}
-    call s:update_GistID(b:gist["id"])
+    if s:update_GistID(b:gist["id"])
+      Gist -e
+    endif
   else
     let loc = ''
     echohl ErrorMsg | echomsg 'Post failed: '. res.message | echohl None
@@ -538,7 +566,9 @@ function! s:GistPostBuffers(private, desc, anonymous)
     \ "description": gist['description'],
     \ "private": a:private,
     \}
-    call s:update_GistID(b:gist["id"])
+    if s:update_GistID(b:gist["id"])
+      Gist -e
+    endif
   else
     let loc = ''
     echohl ErrorMsg | echomsg 'Post failed: ' . res.message | echohl None
@@ -578,6 +608,12 @@ function! gist#Gist(count, line1, line2, ...)
   for arg in args
     if arg =~ '^\(-h\|--help\)$\C'
       help :Gist
+      return
+    elseif arg =~ '^\(-g\|--git\)$\C' && gistidbuf != '' && g:github_api_url == 'https://api.github.com' && has_key(b:, 'gist') && has_key(b:gist, 'id')
+      echo printf('git clone git@github.com:%s', b:gist['id'])
+      return
+    elseif arg =~ '^\(-G\|--gitclone\)$\C' && gistidbuf != '' && g:github_api_url == 'https://api.github.com' && has_key(b:, 'gist') && has_key(b:gist, 'id')
+      exe '!' printf('git clone git@github.com:%s', b:gist['id'])
       return
     elseif arg =~ '^\(-la\|--listall\)$\C'
       let gistls = '-all'
@@ -748,8 +784,8 @@ function! s:GistGetAuthHeader()
     return printf("basic %s", webapi#base64#b64encode(g:github_user.":".password))
   endif
   let auth = ""
-  if filereadable(s:configfile)
-    let str = join(readfile(s:configfile), "")
+  if filereadable(s:gist_token_file)
+    let str = join(readfile(s:gist_token_file), "")
     if type(str) == 1
       let auth = str
     endif
@@ -776,9 +812,9 @@ function! s:GistGetAuthHeader()
     let authorization = webapi#json#decode(res.content)
     if has_key(authorization, 'token')
       let secret = printf("token %s", authorization.token)
-      call writefile([secret], s:configfile)
+      call writefile([secret], s:gist_token_file)
       if !(has('win32') || has('win64'))
-        call system("chmod go= ".s:configfile)
+        call system("chmod go= ".s:gist_token_file)
       endif
     elseif has_key(authorization, 'message')
       let secret = ''

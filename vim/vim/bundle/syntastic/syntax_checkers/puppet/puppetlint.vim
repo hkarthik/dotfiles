@@ -15,18 +15,23 @@ if exists("g:loaded_syntastic_puppet_puppetlint_checker")
 endif
 let g:loaded_syntastic_puppet_puppetlint_checker=1
 
+if exists("g:syntastic_puppet_lint_arguments")
+    let g:syntastic_puppet_puppetlint_args = g:syntastic_puppet_lint_arguments
+    call syntastic#util#deprecationWarn("variable g:syntastic_puppet_lint_arguments is deprecated, please use g:syntastic_puppet_puppetlint_args instead")
+endif
+
 function! SyntaxCheckers_puppet_puppetlint_IsAvailable()
     return
         \ executable("puppet") &&
         \ executable("puppet-lint") &&
-        \ syntastic#util#versionIsAtLeast(syntastic#util#parseVersion('puppet-lint --version 2>' .
+        \ syntastic#util#versionIsAtLeast(syntastic#util#getVersion('puppet-lint --version 2>' .
         \     syntastic#util#DevNull()), [0,1,10])
 endfunction
 
 function! SyntaxCheckers_puppet_puppetlint_GetLocList()
     let makeprg = syntastic#makeprg#build({
         \ 'exe': 'puppet-lint',
-        \ 'post_args': '--log-format "\%{KIND} [\%{check}] \%{message} at \%{fullpath}:\%{linenumber}"',
+        \ 'post_args': '--log-format "%{KIND} [%{check}] %{message} at %{fullpath}:%{linenumber}"',
         \ 'filetype': 'puppet',
         \ 'subchecker': 'puppetlint' })
 
