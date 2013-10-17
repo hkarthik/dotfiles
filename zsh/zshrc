@@ -12,7 +12,7 @@ DISABLE_AUTO_UPDATE="true"
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git heroku vi-mode)
+plugins=(gitfast heroku vi-mode)
 export PATH=/usr/local/bin:${PATH/\/usr\/local\/bin:/}
 export PATH=/usr/local/sbin:$PATH
 export PATH=/usr/local/bin:$PATH
@@ -20,7 +20,6 @@ export PATH="/usr/local/heroku/bin:$PATH"
 export EDITOR='vim'
 #export CC=/usr/bin/llvm-gcc-4.2
 
-source $ZSH/oh-my-zsh.sh
 # use .localrc for SUPER SECRET CRAP that you don't
 # want in your public, versioned repo.
  if [[ -a ~/.localrc ]]
@@ -30,6 +29,7 @@ source $ZSH/oh-my-zsh.sh
 
 # Don't auto title (works for tmux)
 DISABLE_AUTO_TITLE=true
+source $ZSH/oh-my-zsh.sh
 
 # Customize to your needs...
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # Load RVM function
@@ -38,6 +38,9 @@ DISABLE_AUTO_TITLE=true
 
 # Tmuxinator
 [[ -s $HOME/.tmuxinator/scripts/tmuxinator ]] && source $HOME/.tmuxinator/scripts/tmuxinator
+
+# Fix ZSH git completion
+zstyle ':completion:*:*:git:*' script /usr/local/etc/bash_completion.d/git-completion.bash
 
 # Aliases
 alias byword='open -a /Applications/Byword.app/Contents/MacOS/Byword'
@@ -61,63 +64,8 @@ alias rake="noglob rake"
 
 local git_time_since_last_commit='$(git_time_since_commit)%{$reset_color%}'
 
-export PROMPT="╭─${user_host} ${current_dir} ${rvm_ruby} ${git_time_since_last_commit} ${git_branch} $(vi_mode_prompt_info)
-╰─%B$%b "
+export PROMPT="╭─${user_host} ${current_dir} ${rvm_ruby} ${git_branch}╰─%B$%b "
 
-RPS1="${return_code} $(vi_mode_prompt_info)"
-
-
-# Colors vary depending on time lapsed.
-ZSH_THEME_GIT_TIME_SINCE_COMMIT_SHORT="%{$fg[green]%}"
-ZSH_THEME_GIT_TIME_SHORT_COMMIT_MEDIUM="%{$fg[yellow]%}"
-ZSH_THEME_GIT_TIME_SINCE_COMMIT_LONG="%{$fg[red]%}"
-ZSH_THEME_GIT_TIME_SINCE_COMMIT_NEUTRAL="%{$fg[cyan]%}"
-
-# Determine the time since last commit. If branch is clean,
-# use a neutral color, otherwise colors will vary according to time.
-function git_time_since_commit() {
-    if git rev-parse --git-dir > /dev/null 2>&1; then
-        # Only proceed if there is actually a commit.
-        if [[ $(git log 2>&1 > /dev/null | grep -c "^fatal: bad default revision") == 0 ]]; then
-            # Get the last commit.
-            last_commit=`git log --pretty=format:'%at' -1 2> /dev/null`
-            now=`date +%s`
-            seconds_since_last_commit=$((now-last_commit))
-
-            # Totals
-            MINUTES=$((seconds_since_last_commit / 60))
-            HOURS=$((seconds_since_last_commit/3600))
-
-            # Sub-hours and sub-minutes
-            DAYS=$((seconds_since_last_commit / 86400))
-            SUB_HOURS=$((HOURS % 24))
-            SUB_MINUTES=$((MINUTES % 60))
-
-            if [[ -n $(git status -s 2> /dev/null) ]]; then
-                if [ "$MINUTES" -gt 30 ]; then
-                    COLOR="$ZSH_THEME_GIT_TIME_SINCE_COMMIT_LONG"
-                elif [ "$MINUTES" -gt 10 ]; then
-                    COLOR="$ZSH_THEME_GIT_TIME_SHORT_COMMIT_MEDIUM"
-                else
-                    COLOR="$ZSH_THEME_GIT_TIME_SINCE_COMMIT_SHORT"
-                fi
-            else
-                COLOR="$ZSH_THEME_GIT_TIME_SINCE_COMMIT_NEUTRAL"
-            fi
-
-            if [ "$HOURS" -gt 24 ]; then
-                echo "$COLOR${DAYS}d"
-            elif [ "$MINUTES" -gt 60 ]; then
-                echo "$COLOR${HOURS}h${SUB_MINUTES}m"
-            else
-                echo "$COLOR${MINUTES}m"
-            fi
-        else
-            COLOR="$ZSH_THEME_GIT_TIME_SINCE_COMMIT_NEUTRAL"
-            echo "$COLOR"
-        fi
-    fi
-}
 
 function define_vim_wrappers()
 {
