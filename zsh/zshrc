@@ -63,10 +63,9 @@ function bbu() {
 }
 alias rake="noglob rake"
 
-local git_time_since_last_commit='$(git_time_since_commit)%{$reset_color%}'
-
 export PROMPT="╭─${user_host} ${current_dir} ${rvm_ruby} ${git_branch}╰─%B$%b "
 
+bindkey '^R' history-incremental-search-backward
 
 function define_vim_wrappers()
 {
