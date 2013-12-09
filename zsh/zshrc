@@ -51,16 +51,6 @@ for function in ~/.zsh/functions/*; do
   source $function
 done
 
-
-# Needed for nginx/unicorn
-function bbu() {
-  if [[ -z $1 ]] ; then
-    UNICORN_PORT=3000;
-  else
-    UNICORN_PORT=$1;
-  fi
-  bundle exec unicorn -E development -c /usr/local/etc/unicorn.rb -l 127.0.0.1:$UNICORN_PORT
-}
 alias rake="noglob rake"
 
 export PROMPT="╭─${user_host} ${current_dir} ${rvm_ruby} ${git_branch}╰─%B$%b "
@@ -85,29 +75,6 @@ define_vim_wrappers
 
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 
-## Desk.com test reporters
-alias desk_run_tests='REPORTER=spec,slowtest,faillist rake assistly:test:all'
-alias desk_run_tests_50='REPORTER=spec,slowtest,faillist SLOW_TEST_NUMBER=50 rake assistly:test:all'
-alias desk_run_email_tests='REPORTER=spec,slowtest,faillist rake assistly:test:email_units'
-alias desk_run_billing_test='REPORTER=spec,slowtest,faillist rake assistly:test:billing_units'
-alias desk_run_international_test='REPORTER=spec,slowtest,faillist rake assistly:test:international_units'
-
-function desktest() {
-  export REPORTER=progress,failtest,slowtest;
-  RAILS_ENV=test bundle exec time rake ci:setup:db assistly:test:all
-}
-
-function desktest_verbose() {
-  export REPORTER=spec,failtest;
-  RAILS_ENV=test bundle exec time rake ci:setup:db assistly:test:all
-}
-
-function deskonetest() {
-  export REPORTER=spec,failtest;
-  RAILS_ENV=test bundle exec time rake ci:setup:db assistly:test:${2:-units} TEST=${1} ${3}
-}
-
-function desktests() {
-  export REPORTER=spec,failtest;
-  RAILS_ENV=test bundle exec time rake ci:setup:db assistly:test:multiple TESTS=${1}
+function mux() {
+  tmux new -s $1 && tmux source-file .tmux
 }
