@@ -1,7 +1,0 @@
-test() {
-  if [ -S .zeus.sock ]; then
-    zeus test $1
-  else
-    command rake test TEST=$1
-  fi
-}

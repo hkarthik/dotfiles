@@ -35,3 +35,6 @@ Thumbs.db
 
 # Project specific Configs #
 .tmux
+.teamocil_*
+bin/
+
