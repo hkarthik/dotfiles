@@ -69,6 +69,4 @@ define_vim_wrappers
 
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 
-function mux() {
-  tmux new -s $1 && tmux source-file .tmux
-}
+cd ..;1
