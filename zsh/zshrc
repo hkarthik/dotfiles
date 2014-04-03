@@ -47,6 +47,12 @@ zstyle ':completion:*:*:git:*' script /usr/local/etc/bash_completion.d/git-compl
 # Aliases
 alias byword='open -a /Applications/Byword.app/Contents/MacOS/Byword'
 
+# Desk-flow aliases
+alias dfst="bundle exec desk-flow ticket start"
+alias dfs="bundle exec desk-flow ticket submit"
+alias dfc="bundle exec desk-flow ticket complete"
+alias dfr="bundle exec desk-flow ticket review"
+
 export PROMPT="╭─${user_host} ${current_dir} ${rvm_ruby} ${git_branch}╰─%B$%b "
 
 bindkey '^R' history-incremental-search-backward
