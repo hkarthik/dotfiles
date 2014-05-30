@@ -18,7 +18,7 @@ git clone https://github.com/ggreer/the_silver_searcher ag && cd ag && ./build.s
 * Then, if you're using [pathogen](https://github.com/tpope/vim-pathogen):
 
 ```sh
-cd ~/.vim/bundle && git clone https://github.com/rking/ag.vim ag && vim +HelpTags
+cd ~/.vim/bundle && git clone https://github.com/rking/ag.vim ag && vim +Helptags
 ```
 
 * Or, if you're using [Vundle](https://github.com/gmarik/vundle):
@@ -27,7 +27,7 @@ cd ~/.vim/bundle && git clone https://github.com/rking/ag.vim ag && vim +HelpTag
 echo "Bundle 'rking/ag.vim'" >> ~/.vimrc && vim +BundleInstall
 ```
 
-### Configuation
+### Configuration
 
 You can specify a custom ag name and path in your .vimrc like so:
 
@@ -55,6 +55,7 @@ Sometimes `git grep` is even faster, though in my experience it's not noticably 
 
 In the quickfix window, you can use:
 
+    e    to open file and close the quickfix window
     o    to open (same as enter)
     go   to preview file (open but maintain focus on ag.vim results)
     t    to open in new tab

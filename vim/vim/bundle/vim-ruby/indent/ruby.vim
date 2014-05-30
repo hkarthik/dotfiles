@@ -13,12 +13,18 @@ if exists("b:did_indent")
 endif
 let b:did_indent = 1
 
+if !exists('g:ruby_indent_access_modifier_style')
+  " Possible values: "normal", "indent", "outdent"
+  let g:ruby_indent_access_modifier_style = 'normal'
+endif
+
 setlocal nosmartindent
 
 " Now, set up our indentation expression and keys that trigger it.
 setlocal indentexpr=GetRubyIndent(v:lnum)
-setlocal indentkeys=0{,0},0),0],!^F,o,O,e
+setlocal indentkeys=0{,0},0),0],!^F,o,O,e,:,.
 setlocal indentkeys+==end,=else,=elsif,=when,=ensure,=rescue,==begin,==end
+setlocal indentkeys+==private,=protected,=public
 
 " Only define the function once.
 if exists("*GetRubyIndent")
@@ -49,9 +55,10 @@ let s:skip_expr =
       \ "synIDattr(synID(line('.'),col('.'),1),'name') =~ '".s:syng_strcom."'"
 
 " Regex used for words that, at the start of a line, add a level of indent.
-let s:ruby_indent_keywords = '^\s*\zs\<\%(module\|class\|def\|if\|for' .
-      \ '\|while\|until\|else\|elsif\|case\|when\|unless\|begin\|ensure' .
-      \ '\|rescue\):\@!\>' .
+let s:ruby_indent_keywords =
+      \ '^\s*\zs\<\%(module\|class\|if\|for' .
+      \   '\|while\|until\|else\|elsif\|case\|when\|unless\|begin\|ensure\|rescue' .
+      \   '\|\%(public\|protected\|private\)\=\s*def\):\@!\>' .
       \ '\|\%([=,*/%+-]\|<<\|>>\|:\s\)\s*\zs' .
       \    '\<\%(if\|for\|while\|until\|case\|unless\|begin\):\@!\>'
 
@@ -64,7 +71,8 @@ let s:ruby_deindent_keywords =
 " TODO: the do here should be restricted somewhat (only at end of line)?
 let s:end_start_regex =
       \ '\C\%(^\s*\|[=,*/%+\-|;{]\|<<\|>>\|:\s\)\s*\zs' .
-      \ '\<\%(module\|class\|def\|if\|for\|while\|until\|case\|unless\|begin\):\@!\>' .
+      \ '\<\%(module\|class\|if\|for\|while\|until\|case\|unless\|begin' .
+      \   '\|\%(public\|protected\|private\)\=\s*def\):\@!\>' .
       \ '\|\%(^\|[^.:@$]\)\@<=\<do:\@!\>'
 
 " Regex that defines the middle-match for the 'end' keyword.
@@ -92,6 +100,12 @@ let s:bracket_continuation_regex = '%\@<!\%([({[]\)\s*\%(#.*\)\=$'
 " Regex that defines the first part of a splat pattern
 let s:splat_regex = '[[,(]\s*\*\s*\%(#.*\)\=$'
 
+" Regex that describes all indent access modifiers
+let s:access_modifier_regex = '\C^\s*\%(public\|protected\|private\)\s*\%(#.*\)\=$'
+
+" Regex that describes the indent access modifiers (excludes public)
+let s:indent_access_modifier_regex = '\C^\s*\%(protected\|private\)\s*\%(#.*\)\=$'
+
 " Regex that defines blocks.
 "
 " Note that there's a slight problem with this regex and s:continuation_regex.
@@ -105,6 +119,9 @@ let s:block_regex =
       \ '\%(\<do:\@!\>\|%\@<!{\)\s*\%(|\s*(*\s*\%([*@&]\=\h\w*,\=\s*\)\%(,\s*(*\s*[*@&]\=\h\w*\s*)*\s*\)*|\)\=\s*\%(#.*\)\=$'
 
 let s:block_continuation_regex = '^\s*[^])}\t ].*'.s:block_regex
+
+" Regex that describes a leading operator (only a method call's dot for now)
+let s:leading_operator_regex = '^\s*[.]'
 
 " 2. Auxiliary Functions {{{1
 " ======================
@@ -165,7 +182,11 @@ function s:GetMSL(lnum)
     " Otherwise, terminate search as we have found our MSL already.
     let line = getline(lnum)
 
-    if s:Match(lnum, s:splat_regex)
+    if s:Match(msl, s:leading_operator_regex)
+      " If the current line starts with a leading operator, keep its indent
+      " and keep looking for an MSL.
+      let msl = lnum
+    elseif s:Match(lnum, s:splat_regex)
       " If the above line looks like the "*" of a splat, use the current one's
       " indentation.
       "
@@ -315,6 +336,25 @@ function s:Match(lnum, regex)
   endif
 endfunction
 
+" Locates the containing class/module's definition line, ignoring nested classes
+" along the way.
+"
+function! s:FindContainingClass()
+  let saved_position = getpos('.')
+
+  while searchpair(s:end_start_regex, s:end_middle_regex, s:end_end_regex, 'bW',
+        \ s:end_skip_expr) > 0
+    if expand('<cword>') =~# '\<class\|module\>'
+      let found_lnum = line('.')
+      call setpos('.', saved_position)
+      return found_lnum
+    endif
+  endif
+
+  call setpos('.', saved_position)
+  return 0
+endfunction
+
 " 3. GetRubyIndent Function {{{1
 " =========================
 
@@ -334,6 +374,24 @@ function GetRubyIndent(...)
   " Get the current line.
   let line = getline(clnum)
   let ind = -1
+
+  " If this line is an access modifier keyword, align according to the closest
+  " class declaration.
+  if g:ruby_indent_access_modifier_style == 'indent'
+    if s:Match(clnum, s:access_modifier_regex)
+      let class_line = s:FindContainingClass()
+      if class_line > 0
+        return indent(class_line) + &sw
+      endif
+    endif
+  elseif g:ruby_indent_access_modifier_style == 'outdent'
+    if s:Match(clnum, s:access_modifier_regex)
+      let class_line = s:FindContainingClass()
+      if class_line > 0
+        return indent(class_line)
+      endif
+    endif
+  endif
 
   " If we got a closing bracket on an empty line, find its match and indent
   " according to it.  For parentheses we indent to its column - 1, for the
@@ -391,6 +449,11 @@ function GetRubyIndent(...)
     return 0
   endif
 
+  " If the current line starts with a leading operator, add a level of indent.
+  if s:Match(clnum, s:leading_operator_regex)
+    return indent(s:GetMSL(clnum)) + &sw
+  endif
+
   " 3.3. Work on the previous line. {{{2
   " -------------------------------
 
@@ -411,9 +474,29 @@ function GetRubyIndent(...)
   let line = getline(lnum)
   let ind = indent(lnum)
 
+  if g:ruby_indent_access_modifier_style == 'indent'
+    " If the previous line was a private/protected keyword, add a
+    " level of indent.
+    if s:Match(lnum, s:indent_access_modifier_regex)
+      return indent(lnum) + &sw
+    endif
+  elseif g:ruby_indent_access_modifier_style == 'outdent'
+    " If the previous line was a private/protected/public keyword, add
+    " a level of indent, since the keyword has been out-dented.
+    if s:Match(lnum, s:access_modifier_regex)
+      return indent(lnum) + &sw
+    endif
+  endif
+
   " If the previous line ended with a block opening, add a level of indent.
   if s:Match(lnum, s:block_regex)
     return indent(s:GetMSL(lnum)) + &sw
+  endif
+
+  " If the previous line started with a leading operator, use its MSL's level
+  " of indent
+  if s:Match(lnum, s:leading_operator_regex)
+    return indent(s:GetMSL(lnum))
   endif
 
   " If the previous line ended with the "*" of a splat, add a level of indent
