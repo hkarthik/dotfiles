@@ -52,6 +52,7 @@ alias dfst="bundle exec desk-flow ticket start"
 alias dfs="bundle exec desk-flow ticket submit"
 alias dfc="bundle exec desk-flow ticket complete"
 alias dfr="bundle exec desk-flow ticket review"
+alias dfu="bundle exec desk-flow ticket update"
 
 export PROMPT="╭─${user_host} ${current_dir} ${rvm_ruby} ${git_branch}╰─%B$%b "
 
