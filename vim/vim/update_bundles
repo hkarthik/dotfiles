@@ -27,6 +27,7 @@ git_bundles = %w{
   git://github.com/vim-scripts/closetag.vim.git
   git://github.com/rking/ag.vim.git
   git://github.com/vim-scripts/VimClojure.git
+  git://github.com/fatih/vim-go.git
 }
 
 require 'fileutils'

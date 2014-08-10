@@ -60,6 +60,9 @@ if !exists('g:gist_api_url')
     endif
   endif
 endif
+if g:gist_api_url !~ '/$'
+  let g:gist_api_url .= '/'
+endif
 
 if !exists('g:gist_update_on_write')
   let g:gist_update_on_write = 1
@@ -617,6 +620,7 @@ function! gist#Gist(count, line1, line2, ...) abort
   let deletepost = 0
   let editpost = 0
   let anonymous = 0
+  let openbrowser = 0
   let listmx = '^\%(-l\|--list\)\s*\([^\s]\+\)\?$'
   let bufnamemx = '^' . s:bufprefix .'\(\zs[0-9a-f]\+\ze\|\zs[0-9a-f]\+\ze[/\\].*\)$'
   if bufname =~ bufnamemx
@@ -714,6 +718,8 @@ function! gist#Gist(count, line1, line2, ...) abort
           return
         endif
       endif
+    elseif arg =~ '^\(-b\|--browser\)$\C'
+      let openbrowser = 1
     elseif arg !~ '^-' && len(gistnm) == 0
       if gistdesc != ' '
         let gistdesc = matchstr(arg, '^\s*\zs.*\ze\s*$')
@@ -735,16 +741,16 @@ function! gist#Gist(count, line1, line2, ...) abort
     endif
   endfor
   unlet args
-  "echo "gistid=".gistid
-  "echo "gistls=".gistls
-  "echo "gistnm=".gistnm
-  "echo "gistdesc=".gistdesc
-  "echo "private=".private
-  "echo "clipboard=".clipboard
-  "echo "editpost=".editpost
-  "echo "deletepost=".deletepost
+  "echom "gistid=".gistid
+  "echom "gistls=".gistls
+  "echom "gistnm=".gistnm
+  "echom "gistdesc=".gistdesc
+  "echom "private=".private
+  "echom "clipboard=".clipboard
+  "echom "editpost=".editpost
+  "echom "deletepost=".deletepost
 
-  if gistidbuf != '' && gistid == '' && editpost == 0 && deletepost == 0
+  if gistidbuf != '' && gistid == '' && editpost == 0 && deletepost == 0 && anonymous == 0
     let editpost = 1
     let gistid = gistidbuf
   endif
@@ -779,7 +785,7 @@ function! gist#Gist(count, line1, line2, ...) abort
       endif
     endif
     if len(url) > 0
-      if get(g:, 'gist_open_browser_after_post', 0) == 1
+      if get(g:, 'gist_open_browser_after_post', 0) == 1 || openbrowser
         call s:open_browser(url)
       endif
       let gist_put_url_to_clipboard_after_post = get(g:, 'gist_put_url_to_clipboard_after_post', 1)
