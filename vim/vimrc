@@ -94,12 +94,19 @@ set wildignore+=*vim/backups*
 " ==================
 au BufNewFile,BufRead *.ejs set filetype=html
 au BufRead,BufNewFile *.jbuilder setf ruby
+
+" Go files
 au BufRead,BufNewFile *.go set noet ts=4 sw=4 tabstop=4 noexpandtab nolist" 4 space tabs for go files
+au FileType go map <Leader>r <Plug>(go-run)
+au FileType go map <Leader>m :GoFmt<CR>
 
 
 " Plugin Configuration
 " =================================
 let g:ackprg = 'ag --nogroup --nocolor --column' " Use Ag with Ack.vim instead of ack
+let g:go_fmt_autosave = 0 " Don't use auto gofmt on save
+
+" Run gofmt
 
 
 " Run test from vim
