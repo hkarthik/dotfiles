@@ -115,7 +115,7 @@ map <Leader>t :call RunCurrentTestFile()<CR>
 
 function! RunCurrentTestFile()
   if InTestFile()
-    let l:command = "test " . @% . ""
+    let l:command = "zeus test " . @% . ""
     call RunTests(l:command)
   endif
 endfunction
