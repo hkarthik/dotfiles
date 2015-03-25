@@ -4,15 +4,38 @@
 " Use Vim settings, rather then Vi settings (much better!).
 " This must be first, because it changes other options as a side effect.
 set nocompatible
+filetype off
 
-" Pathogen Initialization
-" =======================
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
 
-" This loads all the plugins in ~/.vim/bundle
-" Use tpope's pathogen plugin to manage all other plugins
-runtime bundle/vim-pathogen/autoload/pathogen.vim
-call pathogen#infect()
-call pathogen#helptags()
+" let Vundle manage Vundle, required
+Plugin 'gmarik/Vundle.vim'
+
+" All other plugins
+Plugin 'scrooloose/nerdtree'
+Plugin 'scrooloose/syntastic'
+Plugin 'tpope/vim-fugitive'
+Plugin 'tpope/vim-markdown'
+Plugin 'tpope/vim-rails'
+Plugin 'tpope/vim-surround'
+Plugin 'vim-ruby/vim-ruby'
+Plugin 'pangloss/vim-javascript'
+Plugin 'mattn/gist-vim'
+Plugin 'mattn/webapi-vim'
+Plugin 'sickill/vim-pasta'
+Plugin 'altercation/vim-colors-solarized'
+Plugin 'kien/ctrlp.vim'
+Plugin 'ddollar/nerdcommenter'
+Plugin 'ervandew/supertab'
+Plugin 'Lokaltog/vim-powerline'
+Plugin 'rking/ag.vim'
+Plugin 'fatih/vim-go'
+
+
+call vundle#end()
+filetype plugin indent on
 
 " General Config
 " ==============
@@ -68,8 +91,6 @@ set tabstop=2
 set expandtab
 set cmdheight=2
 
-filetype plugin on
-filetype indent on
 
 set list listchars=trail:·   " Display tabs and trailing spaces visually
 set nowrap                            " Don't wrap lines

@@ -40,8 +40,7 @@ function! SyntaxCheckers_python_pyflakes_GetHighlightRegex(i)
 endfunction
 
 function! SyntaxCheckers_python_pyflakes_GetLocList() dict
-    let makeprg = self.makeprgBuild({
-        \ 'exe_before': (syntastic#util#isRunningWindows() ? '' : 'TERM=dumb') })
+    let makeprg = self.makeprgBuild({})
 
     let errorformat =
         \ '%E%f:%l: could not compile,'.
@@ -50,9 +49,12 @@ function! SyntaxCheckers_python_pyflakes_GetLocList() dict
         \ '%E%f:%l: %m,'.
         \ '%-G%.%#'
 
+    let env = syntastic#util#isRunningWindows() ? {} : { 'TERM': 'dumb' }
+
     let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
+        \ 'env': env,
         \ 'defaults': {'text': "Syntax error"} })
 
     for e in loclist
@@ -69,4 +71,4 @@ call g:SyntasticRegistry.CreateAndRegisterChecker({
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: set et sts=4 sw=4:
+" vim: set sw=4 sts=4 et fdm=marker:
