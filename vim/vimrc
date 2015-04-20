@@ -33,7 +33,6 @@ Plugin 'Lokaltog/vim-powerline'
 Plugin 'rking/ag.vim'
 Plugin 'fatih/vim-go'
 
-
 call vundle#end()
 filetype plugin indent on
 
@@ -124,6 +123,9 @@ au FileType go map <Leader>m :GoFmt<CR>
 
 " Plugin Configuration
 " =================================
+autocmd vimenter * NERDTree
+map <Leader>f :NERDTreeFind<CR>
+let g:gist_clip_command = 'pbcopy'
 let g:ackprg = 'ag --nogroup --nocolor --column' " Use Ag with Ack.vim instead of ack
 let g:go_fmt_autosave = 0 " Don't use auto gofmt on save
 
