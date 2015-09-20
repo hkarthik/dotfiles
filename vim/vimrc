@@ -32,6 +32,7 @@ Plugin 'ervandew/supertab'
 Plugin 'Lokaltog/vim-powerline'
 Plugin 'rking/ag.vim'
 Plugin 'fatih/vim-go'
+Plugin 'nvie/vim-flake8'
 
 call vundle#end()
 filetype plugin indent on
@@ -119,6 +120,10 @@ au BufRead,BufNewFile *.jbuilder setf ruby
 au BufRead,BufNewFile *.go set noet ts=4 sw=4 tabstop=4 noexpandtab nolist" 4 space tabs for go files
 au FileType go map <Leader>r <Plug>(go-run)
 au FileType go map <Leader>m :GoFmt<CR>
+
+" Python files
+au BufRead,BufNewFile *.py set tabstop=4 softtabstop=4 shiftwidth=4 textwidth=80 smarttab expandtab" PEP-8
+autocmd BufWritePost *.py :call Flake8()
 
 
 " Plugin Configuration
